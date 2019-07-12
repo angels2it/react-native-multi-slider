@@ -22,29 +22,43 @@ export default class DefaultLabel extends React.Component {
     ]),
 
     oneMarkerLeftPosition: PropTypes.number,
-    twoMarkerLeftPosition: PropTypes.number
+    twoMarkerLeftPosition: PropTypes.number,
+    formatTooltip: PropTypes.func
   };
 
   static defaultProps = {
     leftDiff: 0,
     labelStyle: {},
-    labelTextStyle: {}
+    labelTextStyle: {},
+    formatTooltip: function (value) {
+      return value;
+    }
   };
 
   render() {
-    const {leftDiff, labelStyle, labelTextStyle, oneMarkerValue, twoMarkerValue, oneMarkerLeftPosition, twoMarkerLeftPosition} = this.props;
+    const { leftDiff, labelStyle, labelTextStyle, oneMarkerValue, twoMarkerValue, oneMarkerLeftPosition, twoMarkerLeftPosition, formatTooltip } = this.props;
 
-    return (
-      <View style={{position: 'relative'}}>
-        <View style={[styles.sliderLabel, {left: (oneMarkerLeftPosition - leftDiff)}, labelStyle]}>
-          <Text style={[styles.sliderLabelText, labelTextStyle]}>{oneMarkerValue}</Text>
-        </View>
+    if (twoMarkerValue) {
+      return (
+        <View style={{ position: 'relative' }}>
+          <View style={[styles.sliderLabel, { left: (oneMarkerLeftPosition - leftDiff) }, labelStyle]}>
+            <Text style={[styles.sliderLabelText, labelTextStyle]}>{formatTooltip(oneMarkerValue)}</Text>
+          </View>
 
-        <View style={[styles.sliderLabel, {left: (twoMarkerLeftPosition - leftDiff)}, labelStyle]}>
-          <Text style={[styles.sliderLabelText, labelTextStyle]}>{twoMarkerValue}</Text>
+          <View style={[styles.sliderLabel, { left: (twoMarkerLeftPosition - leftDiff) }, labelStyle]}>
+            <Text style={[styles.sliderLabelText, labelTextStyle]}>{formatTooltip(twoMarkerValue)}</Text>
+          </View>
         </View>
-      </View>
-    );
+      );
+    } else {
+      return (
+        <View style={{ position: 'relative' }}>
+          <View style={[styles.sliderLabel, { left: (oneMarkerLeftPosition - leftDiff) }, labelStyle]}>
+            <Text style={[styles.sliderLabelText, labelTextStyle]}>{formatTooltip(oneMarkerValue)}</Text>
+          </View>
+        </View>
+      )
+    }
   }
 }
 
@@ -60,6 +74,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     textAlign: 'center',
     fontStyle: 'normal',
-    fontSize: 11
+    fontSize: 11,
+    color: '#fff'
   },
 });

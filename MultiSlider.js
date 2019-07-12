@@ -14,6 +14,8 @@ import DefaultMarker from './DefaultMarker';
 import DefaultLabel from './DefaultLabel';
 import { createArray, valueToPosition, positionToValue } from './converters';
 
+const MARKER_CONTAINER_WIDTH = 48;
+
 export default class MultiSlider extends React.Component {
   static defaultProps = {
     values: [0],
@@ -44,7 +46,8 @@ export default class MultiSlider extends React.Component {
     allowOverlap: false,
     snapped: false,
     vertical: false,
-    minMarkerOverlapDistance: 0
+    minMarkerOverlapDistance: 0,
+    markerContainerWidth: MARKER_CONTAINER_WIDTH
   };
 
   constructor(props) {
@@ -351,6 +354,9 @@ export default class MultiSlider extends React.Component {
       sliderLength,
       markerOffsetX,
       markerOffsetY,
+      labelStyle,
+      labelTextStyle,
+      formatTooltip
     } = this.props;
     const twoMarkers = this.props.values.length == 2; // when allowOverlap, positionTwo could be 0, identified as string '0' and throwing 'RawText 0 needs to be wrapped in <Text>' error
 
@@ -384,12 +390,12 @@ export default class MultiSlider extends React.Component {
 
     const markerContainerOne = {
       top: markerOffsetY - 24,
-      left: trackOneLength + markerOffsetX - 24,
+      left: trackOneLength + markerOffsetX,
     };
 
     const markerContainerTwo = {
       top: markerOffsetY - 24,
-      right: trackThreeLength - markerOffsetX - 24,
+      right: trackThreeLength - markerOffsetX,
     };
 
     const containerStyle = [styles.container, this.props.containerStyle];
@@ -401,16 +407,17 @@ export default class MultiSlider extends React.Component {
     }
 
     const body = (<React.Fragment>
-      <View style={[styles.fullTrack, { width: sliderLength }]}>
+      <View style={[styles.fullTrack, { width: sliderLength + this.props.markerContainerWidth }]}>
           <View
             style={[
               styles.track,
               this.props.trackStyle,
               trackOneStyle,
-              { width: trackOneLength },
+              { width: trackOneLength + this.props.markerContainerWidth },
             ]}
           />
-          <View
+         { twoMarkers && (
+            <View
             style={[
               styles.track,
               this.props.trackStyle,
@@ -419,6 +426,7 @@ export default class MultiSlider extends React.Component {
             ]}
             {...(twoMarkers ? this._panResponderBetween.panHandlers : {})}
           />
+         )}
           {twoMarkers && (
             <View
               style={[
@@ -452,7 +460,7 @@ export default class MultiSlider extends React.Component {
               styles.markerContainer,
               markerContainerOne,
               this.props.markerContainerStyle,
-              positionOne > sliderLength / 2 && styles.topMarkerContainer,
+              positionOne > sliderLength / 2 && styles.topMarkerContainer
             ]}
           >
             <View
@@ -529,13 +537,16 @@ export default class MultiSlider extends React.Component {
     </React.Fragment>);
     const leftDiff = (Dimensions.get('window').width - this.props.sliderLength) / 2;
     return (
-      <View>
+      <View style={[this.props.style]}>
         <Label
           leftDiff={leftDiff}
           oneMarkerValue={this.state.valueOne}
           twoMarkerValue={this.state.valueTwo}
           oneMarkerLeftPosition={positionOne}
           twoMarkerLeftPosition={positionTwo}
+          labelStyle={labelStyle}
+          labelTextStyle={labelTextStyle}
+          formatTooltip={formatTooltip}
         />
         {this.props.imageBackgroundSource && 
           <ImageBackground source={this.props.imageBackgroundSource} style={[{width: '100%', height: '100%'}, containerStyle]}>
@@ -594,7 +605,7 @@ const styles = StyleSheet.create({
   },
   markerContainer: {
     position: 'absolute',
-    width: 48,
+    width: MARKER_CONTAINER_WIDTH,
     height: 48,
     backgroundColor: 'transparent',
     justifyContent: 'center',
