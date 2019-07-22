@@ -407,13 +407,13 @@ export default class MultiSlider extends React.Component {
     }
 
     const body = (<React.Fragment>
-      <View style={[styles.fullTrack, { width: sliderLength + this.props.markerContainerWidth }]}>
+      <View style={[styles.fullTrack, { width: sliderLength }]}>
           <View
             style={[
               styles.track,
               this.props.trackStyle,
               trackOneStyle,
-              { width: trackOneLength + this.props.markerContainerWidth },
+              { width: trackOneLength + this.props.markerContainerWidth / 2 },
             ]}
           />
          { twoMarkers && (
